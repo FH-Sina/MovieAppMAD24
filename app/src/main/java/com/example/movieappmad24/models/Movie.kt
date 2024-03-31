@@ -151,3 +151,4 @@ fun getMovies(): List<Movie> {
 
         )
 }
+data class Movie2(val title: String, val image: Int)
