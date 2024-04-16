@@ -53,25 +53,43 @@ android {
     }
 }
 
+
 dependencies {
+    // It's a good practice to define all your version numbers in one place to make updates easier.
+    val navVersion = "2.7.7"  // Update this with the latest version available
+    val lifecycleVersion = "2.7.0"  // Update this with the latest version available
+    val composeVersion = "2024.03.00"  // Update this with the latest version available
+    val coilVersion = "2.1.0"  // Update this with the latest version available
 
-
-    val navVersion = "2.7.7"
+    // AndroidX and Kotlin libraries
+    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:$lifecycleVersion")
     implementation("androidx.navigation:navigation-compose:$navVersion")
     implementation("androidx.core:core-ktx:1.12.0")
-    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.7.0")
+    implementation("androidx.lifecycle:lifecycle-runtime-ktx:$lifecycleVersion")
     implementation("androidx.activity:activity-compose:1.8.2")
-    implementation(platform("androidx.compose:compose-bom:2024.03.00"))
+    //noinspection GradleDependency
+    implementation(platform("androidx.compose:compose-bom:$composeVersion"))
     implementation("androidx.compose.ui:ui")
     implementation("androidx.compose.ui:ui-graphics")
     implementation("androidx.compose.ui:ui-tooling-preview")
     implementation("androidx.compose.material3:material3")
-    implementation ("io.coil-kt:coil-compose:2.1.0")
+    //noinspection GradleDependency
+    implementation("io.coil-kt:coil-compose:$coilVersion")
+
+    // Media3 libraries
+    implementation("androidx.media3:media3-exoplayer:1.3.1")
+    implementation("androidx.media3:media3-exoplayer-dash:1.3.1")
+    implementation("androidx.media3:media3-ui:1.3.1")
+
+    // Testing libraries
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
-    androidTestImplementation(platform("androidx.compose:compose-bom:2024.03.00"))
+    //noinspection GradleDependency
+    androidTestImplementation(platform("androidx.compose:compose-bom:$composeVersion"))
     androidTestImplementation("androidx.compose.ui:ui-test-junit4")
+
+    // Debugging libraries
     debugImplementation("androidx.compose.ui:ui-tooling")
     debugImplementation("androidx.compose.ui:ui-test-manifest")
 }

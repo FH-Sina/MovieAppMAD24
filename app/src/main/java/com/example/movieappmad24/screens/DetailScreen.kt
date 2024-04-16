@@ -1,71 +1,95 @@
 package com.example.movieappmad24.screens
 
-import android.annotation.SuppressLint
-import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material3.*
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.example.movieappmad24.MovieImage
-import com.example.movieappmad24.MovieRow
 import com.example.movieappmad24.models.Movie
-import com.example.movieappmad24.models.getMovies
+import com.example.movieappmad24.viewmodels.MoviesViewModel
+import com.example.movieappmad24.widgets.HorizontalScrollableImageView
+import com.example.movieappmad24.widgets.MovieRow
+import com.example.movieappmad24.widgets.MovieTrailerPlayer
+import com.example.movieappmad24.widgets.SimpleTopAppBar
 
-@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DetailScreen(movieId: String?, navController: NavController) {
-    val movie = getMovies().find { it.id == movieId }
-
-    Scaffold(
-        topBar = {
-            DetailScreenTopBar(movie?.title ?: "Movie Details", navController)
+fun DetailScreen(
+    movieId: String?,
+    navController: NavController,
+    moviesViewModel: MoviesViewModel
+) {
+    movieId?.let { id ->
+        moviesViewModel.movies.find { it.id == id }?.also { movie ->
+            DetailLayout(movie, navController, moviesViewModel)
         }
-    ) { paddingValues ->
-        DetailContent(movie, paddingValues)
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DetailScreenTopBar(title: String, navController: NavController) {
-    CenterAlignedTopAppBar(
-        title = { Text(title) },
-        navigationIcon = {
-            IconButton(onClick = { navController.popBackStack() }) {
-                Icon(Icons.Default.ArrowBack, contentDescription = "Back")
-            }
-        },
-        colors = TopAppBarDefaults.topAppBarColors()
+fun DetailLayout(
+    movie: Movie,
+    navController: NavController,
+    moviesViewModel: MoviesViewModel
+) {
+    Scaffold(
+        topBar = { DetailTopBar(movie.title, navController) },
+        content = { padding ->
+            DetailContent(movie, padding, moviesViewModel)
+        }
     )
 }
 
 @Composable
-fun DetailContent(movie: Movie?, paddingValues: PaddingValues) {
-    movie?.let {
-        Column(
-            modifier = Modifier
-                .padding(paddingValues)
-                .fillMaxWidth()
-        ) {
-            MovieRow(movie = it)
-            Spacer(modifier = Modifier.height(8.dp))
-            LazyRow {
-                items(it.images) { image ->
-                    Card(
-                        modifier = Modifier
-                            .padding(8.dp)
-                            .width(200.dp)
-                    ) {
-                        MovieImage(imageUrl = image)
-                    }
-                }
-            }
+fun DetailTopBar(title: String, navController: NavController) {
+    SimpleTopAppBar(title = title) {
+        IconButton(onClick = { navController.popBackStack() }) {
+            Icon(
+                imageVector = Icons.Filled.ArrowBack,
+                contentDescription = "Go back"
+            )
         }
     }
+}
+
+@Composable
+fun DetailContent(
+    movie: Movie,
+    paddingValues: PaddingValues,
+    moviesViewModel: MoviesViewModel
+) {
+    Column(modifier = Modifier.padding(paddingValues)) {
+        MovieInfoRow(movie, moviesViewModel)
+        MovieImages(movie)
+        MovieTrailerSection(movie)
+    }
+}
+
+@Composable
+fun MovieInfoRow(
+    movie: Movie,
+    moviesViewModel: MoviesViewModel
+) {
+    MovieRow(
+        modifier = Modifier.fillMaxWidth(),
+        movie = movie,
+        onFavoriteClick = { moviesViewModel.toggleFavoriteMovie(movie.id) },
+        onItemClick = { /* This might handle a different navigation or action */ }
+    )
+}
+
+@Composable
+fun MovieImages(movie: Movie) {
+    HorizontalScrollableImageView(movie = movie)
+}
+
+@Composable
+fun MovieTrailerSection(movie: Movie) {
+    MovieTrailerPlayer(movieTrailer = movie.trailer)
 }
